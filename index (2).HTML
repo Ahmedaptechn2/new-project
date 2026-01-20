@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yaqoob Tech | Competition Ready</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+
+    <style>
+        /* --- 1. GLOBAL VARIABLES (THEME CONTROL) --- */
+        :root {
+            --primary-color: #6f0cd1;  /* Green Branding */
+            --secondary-color: #0c59d6; /* Blue Accent */
+            --dark-bg: #0f172a;
+            --darker-bg: #0b1120;
+            --white: #ffffff;
+            --text-grey: #cbd5e1;
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: var(--dark-bg);
+            color: var(--white);
+            overflow-x: hidden;
+        }
+
+        /* --- ADDED ANIMATION CSS (UPDATED) --- */
+        .flying-dot {
+            width: 35px;  /* SIZE BADHA DIYA (Mota) */
+            height: 35px; /* SIZE BADHA DIYA (Mota) */
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            position: fixed;
+            z-index: 9999;
+            pointer-events: none;
+            box-shadow: 0 0 15px var(--primary-color); /* Glow bhi badha diya */
+            
+            /* SPEED SLOW KAR DI (0.8s se 1.5s) */
+            transition: all 2.5s cubic-bezier(0.19, 1, 0.22, 1); 
+        }
+
+        /* --- 2. PRELOADER CSS --- */
+        #preloader {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100vh;
+            background: var(--dark-bg);
+            display: flex;
+            justify-content: center; align-items: center;
+            z-index: 10000;
+            transition: all 0.8s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+        .loader-finish { transform: translateY(-100%); opacity: 0; pointer-events: none; }
+        .loader-content { text-align: center; }
+        .loader-spinner {
+            width: 60px; height: 60px;
+            border: 5px solid rgba(255, 255, 255, 0.1);
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        .loader-text {
+            color: var(--white);
+            font-size: 1.2rem; font-weight: 700;
+            letter-spacing: 4px; text-transform: uppercase;
+            animation: pulseText 1.5s ease-in-out infinite;
+        }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        @keyframes pulseText {
+            0%, 100% { opacity: 0.5; transform: scale(0.95); }
+            50% { opacity: 1; transform: scale(1); color: var(--primary-color); }
+        }
+
+        /* --- 3. GLASS NAVBAR --- */
+        .glass-nav {
+            position: fixed;
+            top: 0; left: 0; width: 100%;
+            padding: 20px 8%;
+            display: flex; justify-content: space-between; align-items: center;
+            z-index: 1000;
+            background: rgba(15, 23, 42, 0.1);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .logo { font-size: 1.5rem; font-weight: 800; color: var(--white); text-decoration: none; }
+        .logo span { color: var(--primary-color); }
+        .nav-links a {
+            color: var(--white); text-decoration: none;
+            margin-left: 30px; font-weight: 500; transition: var(--transition);
+        }
+        .nav-links a:hover { color: var(--primary-color); }
+        
+        .cart-icon { position: relative; font-size: 1.2rem; }
+        #cart-count {
+            position: absolute; top: -10px; right: -10px;
+            background: var(--primary-color);
+            font-size: 0.7rem; padding: 2px 6px; border-radius: 50%;
+        }
+
+        /* --- 4. HERO CAROUSEL --- */
+        .hero {
+            position: relative;
+            height: 100vh;
+            width: 100%;
+            overflow: hidden;
+        }
+        .slide {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            background-size: cover; background-position: center;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .slide.active { opacity: 1; }
+        .slide::after {
+            content: ''; position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1;
+        }
+        .hero-content {
+            position: relative; z-index: 2;
+            text-align: center; max-width: 800px; padding: 20px;
+        }
+        .hero-content h1 {
+            font-size: 3.5rem; margin-bottom: 20px;
+            text-transform: uppercase; font-weight: 800;
+        }
+        .hero-content h1 span { color: var(--primary-color); }
+        .btn {
+            padding: 12px 30px;
+            background: var(--primary-color); color: var(--white);
+            text-decoration: none; border-radius: 5px; font-weight: 600;
+            display: inline-block; transition: var(--transition);
+        }
+        .btn:hover {
+            background: var(--secondary-color);
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,209,94,0.4);
+        }
+        
+        .arrow {
+            position: absolute; top: 50%; transform: translateY(-50%);
+            z-index: 10; font-size: 2rem; color: rgba(255,255,255,0.5);
+            cursor: pointer; transition: 0.3s; padding: 10px;
+        }
+        .arrow:hover { color: var(--primary-color); background: rgba(0,0,0,0.5); }
+        .left-arrow { left: 20px; }
+        .right-arrow { right: 20px; }
+
+        /* --- 5. FOOTER CSS --- */
+        .main-footer {
+            background: var(--darker-bg);
+            padding: 80px 10% 30px;
+            border-top: 2px solid rgba(12, 209, 94, 0.1);
+        }
+        .footer-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 40px;
+        }
+        .footer-col h3 {
+            color: var(--white); margin-bottom: 25px; position: relative;
+        }
+        .footer-col h3::after {
+            content: ''; position: absolute; left: 0; bottom: -10px;
+            width: 40px; height: 3px; background: var(--primary-color);
+        }
+        .footer-logo { font-size: 1.8rem; font-weight: 800; margin-bottom: 20px; }
+        .footer-logo span { color: var(--primary-color); }
+        .footer-col ul li { list-style: none; margin-bottom: 12px; }
+        .footer-col ul li a {
+            color: var(--text-grey); text-decoration: none;
+            display: flex; align-items: center; gap: 10px; transition: 0.3s;
+        }
+        .footer-col ul li a:hover { color: var(--white); transform: translateX(8px); }
+        
+        .social-links { display: flex; gap: 15px; margin-top: 20px; }
+        .social-links a {
+            width: 40px; height: 40px;
+            background: rgba(255,255,255,0.05);
+            display: flex; align-items: center; justify-content: center;
+            border-radius: 8px; color: white; transition: 0.4s; text-decoration: none;
+        }
+        .social-links a:hover { background: var(--primary-color); transform: translateY(-5px); }
+        .footer-bottom {
+            text-align: center; margin-top: 60px; padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.05); color: var(--text-grey);
+        }
+
+        @media (max-width: 768px) {
+            .hero-content h1 { font-size: 2.2rem; }
+            .glass-nav { padding: 15px 5%; }
+            .nav-links { display: none; }
+        }
+        
+        /* --- PRODUCTS SECTION --- */
+        .products-section { padding: 80px 10%; background: var(--dark-bg); }
+        .section-title { text-align: center; font-size: 2.5rem; color: var(--white); margin-bottom: 50px; font-weight: 700; }
+        .section-title span { color: var(--primary-color); border-bottom: 3px solid var(--primary-color); }
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px; }
+        .product-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px; overflow: hidden; position: relative; transition: var(--transition); }
+        .product-card:hover { transform: translateY(-10px); box-shadow: 0 10px 20px rgba(12, 209, 94, 0.15); border-color: var(--primary-color); }
+        .product-image { width: 100%; height: 250px; position: relative; overflow: hidden; background: transparent; display: flex; align-items: center; justify-content: center; }
+        .product-image img { max-width: 90%; max-height: 90%; transition: 0.5s ease; }
+        .product-card:hover .product-image img { transform: scale(1.1); opacity: 0.8; }
+        .add-btn { position: absolute; bottom: -50px; left: 50%; transform: translateX(-50%); background: var(--primary-color); color: var(--white); padding: 10px 25px; border: none; border-radius: 30px; font-weight: 600; cursor: pointer; transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); white-space: nowrap; box-shadow: 0 5px 15px rgba(0,0,0,0.3); z-index: 5; }
+        .add-btn:hover { background: var(--secondary-color); }
+        .product-card:hover .add-btn { bottom: 20px; }
+        .product-info { padding: 20px; text-align: center; }
+        .category { font-size: 0.8rem; color: var(--text-grey); text-transform: uppercase; letter-spacing: 1px; }
+        .product-title { font-size: 1.2rem; color: var(--white); margin: 10px 0; font-weight: 600; }
+        .stars { color: #fca903; font-size: 0.9rem; margin-bottom: 10px; }
+        .price { font-size: 1.3rem; color: var(--primary-color); font-weight: 700; }
+        .social-float-parent {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    display: flex;
+    flex-direction: column; /* Icons ko ek ke upar ek karne ke liye */
+    gap: 15px; /* Icons ke darmiyan fasla */
+    z-index: 1000;
+}
+
+/* Common Styling for both icons */
+.social-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 2px 4px 10px rgba(0,0,0,0.4);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.social-icon img {
+    width: 32px;
+    height: 32px;
+}
+
+/* WhatsApp Specific */
+.whatsapp-float {
+    background-color: #25d366;
+}
+
+/* Instagram Specific (Gradient Color) */
+.instagram-float {
+    background: radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 45%, #d6249f 60%, #285aeb 90%);
+}
+
+/* Hover Effects */
+.social-icon:hover {
+    transform: scale(1.15) translateY(-5px);
+}
+
+.whatsapp-float:hover {
+    box-shadow: 0 0 20px rgba(37, 211, 102, 0.6);
+}
+
+.instagram-float:hover {
+    box-shadow: 0 0 20px rgba(214, 36, 159, 0.6);
+}
+/* --- IMPROVED TRANSPARENT RULES SECTION --- */
+#rules {
+    padding: 80px 0;
+    background: transparent; /* Parent container transparent */
+}
+
+.rules-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 25px;
+    margin-top: 40px;
+}
+
+.rule-card {
+    /* Background ko bilkul transparent rakha hai blur ke sath */
+    background: rgba(255, 255, 255, 0.05); 
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px); /* Safari support */
+    
+    /* Subtle border aur left highlight */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-left: 6px solid var(--accent-color);
+    
+    padding: 30px;
+    border-radius: 20px; /* Modern rounded corners */
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+    overflow: hidden;
+}
+
+/* Hover par Card ka look */
+.rule-card:hover {
+    transform: translateY(-10px) scale(1.03);
+    background: rgba(255, 255, 255, 0.15); /* Thoda sa light highlight */
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+}
+
+/* Icon ki styling */
+.rule-icon {
+    font-size: 2.2rem;
+    min-width: 60px;
+    height: 60px;
+    background: rgba(52, 152, 219, 0.2); /* Transparent icon bg */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 15px;
+    transition: transform 0.3s ease;
+}
+
+.rule-card:hover .rule-icon {
+    transform: rotate(15deg) scale(1.1);
+}
+
+/* Text Colors */
+.rule-text h4 {
+    color: var(--white); /* Heading color white taake dark background par dikhe */
+    margin-bottom: 8px;
+    font-size: 1.3rem;
+    font-weight: 800;
+    letter-spacing: 0.5px;
+}
+
+.rule-text p {
+    font-size: 0.95rem;
+    color: rgba(255, 255, 255, 0.8); /* Slightly transparent white text */
+    margin: 0;
+    font-weight: 300;
+}
+
+/* Glow Effect Decoration */
+.rule-card::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.rule-card:hover::after {
+    opacity: 1;
+}
+.contact-section, .visiting-section {
+    padding: 60px 8%;
+    background: transparent;
+}
+
+.contact-container, .visiting-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: var(--card-glass);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    border-radius: 30px;
+    padding: 50px;
+    box-shadow: var(--shadow-lg);
+}
+
+.contact-container {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 60px;
+}
+
+/* Titles */
+.contact-info h2, .contact-form h2, .card h3 {
+    font-size: 2.2rem;
+    font-weight: 800;
+    margin-bottom: 25px;
+    color: var(--white);
+    position: relative;
+}
+
+.contact-info h2::after, .card h3::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -5px;
+    width: 50px;
+    height: 4px;
+    background: var(--gold);
+    border-radius: 10px;
+}
+
+/* Info Items */
+.info-item {
+    background: rgba(255,255,255,0.05);
+    padding: 20px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    transition: var(--transition);
+    border: 1px solid transparent;
+}
+
+.info-item:hover {
+    background: rgba(212, 175, 55, 0.1);
+    border-color: var(--gold);
+    transform: translateX(10px);
+}
+
+.info-item .icon {
+    font-size: 1.5rem;
+    background: var(--gold);
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    color: var(--primary-color);
+}
+
+/* Input Styling */
+.input-group {
+    margin-bottom: 20px;
+}
+
+.input-group input, .input-group textarea {
+    width: 100%;
+    padding: 15px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 10px;
+    color: white;
+    font-size: 1rem;
+    transition: var(--transition);
+}
+
+.input-group input:focus, .input-group textarea:focus {
+    border-color: var(--gold);
+    background: rgba(255,255,255,0.1);
+    outline: none;
+    box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+}
+
+/* Visiting Section Specific */
+.visiting-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    border-top: none;
+    margin-top: -30px; /* Merging look */
+}
+
+.hours-list li, .rules-list li {
+    padding: 15px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    color: rgba(255,255,255,0.8);
+}
+
+.rules-list li::before {
+    content: "✓";
+    margin-right: 15px;
+    color: var(--gold);
+    font-weight: bold;
+}
+
+.btn-submit {
+    width: 100%;
+    padding: 18px;
+    background: var(--gold);
+    color: var(--primary-color);
+    font-weight: 700;
+    text-transform: uppercase;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: var(--transition);
+    border: none;
+}
+
+.btn-submit:hover {
+    letter-spacing: 2px;
+    box-shadow: 0 10px 20px rgba(212, 175, 55, 0.3);
+}
+
+@media (max-width: 992px) {
+    .contact-container, .visiting-container { grid-template-columns: 1fr; padding: 30px; }
+}
+/* --- CUSTOM CURSOR CSS --- */
+
+/* Purane cursor ko hide karne ke liye (Optional) */
+/* html, body { cursor: none; } */
+
+/* --- MODERN SCHOOL CURSOR CSS --- */
+body {
+    /* Default cursor ko hide karne ke liye */
+    cursor: none;
+}
+
+/* Main Dot (Pen ki tip ki tarah) */
+.cursor-dot {
+    width: 8px;
+    height: 8px;
+    background-color: var(--primary-color);
+    position: fixed;
+    top: 0;
+    left: 0;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    z-index: 10001;
+    pointer-events: none;
+    transition: width 0.3s, height 0.3s, background-color 0.3s;
+}
+
+/* Outer Ring (Focus Ring) */
+.cursor-outline {
+    width: 35px;
+    height: 35px;
+    border: 2px solid var(--gold);
+    position: fixed;
+    top: 0;
+    left: 0;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    z-index: 10000;
+    pointer-events: none;
+    /* Smooth movement ke liye transition thoda kam rakha hai */
+    transition: transform 0.1s ease-out, width 0.3s, height 0.3s, border-color 0.3s;
+}
+
+/* Jab mouse link par jaye (Hover State) */
+.cursor-hover .cursor-dot {
+    width: 12px;
+    height: 12px;
+    background-color: var(--white);
+}
+
+.cursor-hover .cursor-outline {
+    width: 55px;
+    height: 55px;
+    border-color: var(--primary-color);
+    background-color: rgb(111, 12, 209); /* Light purple tint */
+}
+    </style>
+</head>
+<body>
+
+    <div id="preloader">
+        <div class="loader-content">
+            <div class="loader-spinner"></div>
+            <h2 class="loader-text">KNOWLEDGE HUB</h2>
+        </div>
+    </div>
+
+    <nav class="glass-nav">
+        <a href="#" class="logo">KNOWLEDGE <span>HUB</span></a>
+        <div class="nav-links">
+            <a href="#">Home</a>
+            <a href="#">FACILITIES</a>
+            <a href="#">RULES</a>
+            <a href="#" class="btn" style="padding: 8px 20px;">Contact</a>
+            
+            <a href="#" class="cart-icon">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <span id="cart-count">0</span>
+            </a>
+        </div>
+    </nav>
+
+    <header class="hero">
+        <div class="arrow left-arrow" onclick="prevSlide()"><i class="fas fa-chevron-left"></i></div>
+        <div class="arrow right-arrow" onclick="nextSlide()"><i class="fas fa-chevron-right"></i></div>
+
+        <div class="slide active" style="background-image: url('https://upload.wikimedia.org/wikipedia/commons/8/8e/Staples_High_School%2C_Westport%2C_CT.jpg');">
+            <div class="hero-content" data-aos="fade-up">
+                <h1>Future of <span>GENRAITION</span></h1>
+                <p>High-performance machines built for professional DEVOLPERS.</p>
+                <a href="#" class="btn">Explore OUR WORKS <i class="fas fa-gamepad"></i></a>
+            </div>
+        </div>
+        <div class="slide" style="background-image: url('https://varthana.com/school/wp-content/uploads/2024/04/B869-School.jpg');">
+            <div class="hero-content">
+                <h1>LEARN FROM <span>BEST</span></h1>
+                <p>BRAIN NBEHIND THE CAMPUS.</p>
+                <a href="#" class="btn">View Catalog <i class="fas fa-briefcase"></i></a>
+            </div>
+        </div>
+        <div class="slide" style="background-image: url('https://navidsaqib.com/wp-content/uploads/2025/09/10-best-O-and-A-level-schools-in-karachi-1024x576.webp');">
+            <div class="hero-content">
+                <h1>Premium <span>Support</span></h1>
+                <p>24/7 technical assistance for all your hardware needs.</p>
+                <a href="#" class="btn">Get Help <i class="fas fa-headset"></i></a>
+            </div>
+        </div>
+    </header>
+    <div class="cursor-dot"></div>
+<div class="cursor-outline"></div>
+
+    <section class="products-section">
+    <h2 class="section-title" data-aos="fade-up">CAMPUS FACILITIES <span>SECTION'S</span></h2>
+    
+    <div class="products-grid">
+        <div class="product-card" data-aos="fade-up" data-aos-delay="0">
+            <div class="product-image">
+                <img src="https://images.unsplash.com/photo-1521587760476-6c12a4b040da?auto=format&fit=crop&w=500&q=60" alt="Laptop">
+                <button class="add-btn"><i class="fa-solid fa-magnifying-glass"></i> EXPLORE </button>
+            </div>
+            <div class="product-info">
+                <span class="category">FACILITIES</span>
+                <h3 class="product-title">LIBRARY</h3>
+                <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i></div>
+                      <p>Access to over 100,000 books, research papers, and a dedicated digital learning hub with high-speed internet.</p>
+            </div>
+        </div>
+        <div class="product-card" data-aos="fade-up" data-aos-delay="100">
+            <div class="product-image">
+                <img src="https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?auto=format&fit=crop&w=500&q=60" alt="MacBook">
+                <button class="add-btn"><i class="fa-solid fa-magnifying-glass"></i> EXPLORE</button>
+
+            </div>
+            <div class="product-info">
+                <span class="category">FACILITIES</span>
+                <h3 class="product-title">COMPUTER LABORATORY</h3>
+                <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                  <p>Advanced laboratories equipped with the latest technology for physics, chemistry, and engineering research.</p>
+            </div>
+        </div>
+        <div class="product-card" data-aos="fade-up" data-aos-delay="100">
+            <div class="product-image">
+                <img src="https://img.freepik.com/premium-photo/photo-cricket-stadium-night-with-sport-light-background_1053211-1709.jpg?semt=ais_hybrid&w=740&q=80" alt="MacBook">
+                <button class="add-btn"><i class="fa-solid fa-magnifying-glass"></i> EXPLORE</button>
+
+            </div>
+            <div class="product-info">
+                <span class="category">FACILITIES</span>
+                <h3 class="product-title">COMPUTER LABORATORY</h3>
+                <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+                  <p>Advanced laboratories equipped with the latest technology for physics, chemistry, and engineering research.</p>
+            </div>
+        </div>
+        <div class="product-card" data-aos="fade-up" data-aos-delay="300">
+            <div class="product-image">
+                <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=500&q=60" alt="HP Spectre">
+                <button class="add-btn"><i class="fa-solid fa-magnifying-glass"></i> EXPLORE</button>
+            </div>
+            <div class="product-info">
+                <span class="category">FACILITIES</span>
+                <h3 class="product-title">SPORT'S AND RECRERATION</h3>
+                  
+                <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i></div>
+                     <p>Includes an Olympic-sized swimming pool, indoor courts, and a fully equipped modern gymnasium.</p>
+            </div>
+        </div>
+    </div>
+    <section class="container" id="rules">
+    <div class="section-header" data-aos="fade-up">
+        <h2>Campus Rules & Regulations</h2>
+    </div>
+
+    <div class="rules-container">
+        <div class="rule-card" data-aos="fade-right" data-aos-delay="100">
+            <div class="rule-icon">⏰</div>
+            <div class="rule-text">
+                <h4>Punctuality</h4>
+                <p>Late entry is not permitted. Students must arrive at least 10 minutes before sessions.</p>
+            </div>
+        </div>
+
+        <div class="rule-card" data-aos="fade-right" data-aos-delay="200">
+            <div class="rule-icon">🪪</div>
+            <div class="rule-text">
+                <h4>ID Card Policy</h4>
+                <p>Wearing the institutional ID card is mandatory at all times within the campus premises.</p>
+            </div>
+        </div>
+
+        <div class="rule-card" data-aos="fade-right" data-aos-delay="300">
+            <div class="rule-icon">🚫</div>
+            <div class="rule-text">
+                <h4>No Gadgets</h4>
+                <p>Mobile phones and personal electronics are strictly prohibited during academic hours.</p>
+            </div>
+        </div>
+
+        <div class="rule-card" data-aos="fade-right" data-aos-delay="400">
+            <div class="rule-icon">🏛️</div>
+            <div class="rule-text">
+                <h4>Property Respect</h4>
+                <p>Any damage to campus property will lead to heavy fines and disciplinary actions.</p>
+            </div>
+        </div>
+
+        <div class="rule-card" data-aos="fade-right" data-aos-delay="500">
+            <div class="rule-icon">🧹</div>
+            <div class="rule-text">
+                <h4>Cleanliness</h4>
+                <p>Help us keep the campus green and clean. Use dustbins for all kinds of waste.</p>
+            </div>
+        </div>
+
+        <div class="rule-card" data-aos="fade-right" data-aos-delay="600">
+            <div class="rule-icon">🤫</div>
+            <div class="rule-text">
+                <h4>Library Silence</h4>
+                <p>Maintain absolute silence in the library. Group discussions are not allowed.</p>
+            </div>
+        </div>
+
+        <div class="rule-card" data-aos="fade-right" data-aos-delay="700">
+            <div class="rule-icon">🤝</div>
+            <div class="rule-text">
+                <h4>Ethical Conduct</h4>
+                <p>Zero tolerance for bullying, harassment, or any form of misbehavior with staff.</p>
+            </div>
+        </div>
+    </div>
+</section>
+  <div class="social-float-parent">
+    <a href="https://www.instagram.com/itx_imaad_07/" class="social-icon instagram-float" target="_blank">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/e/e7/Instagram_logo_2016.svg" alt="Instagram">
+    </a>
+    
+    <a href="https://wa.me/923302341668" class="social-icon whatsapp-float" target="_blank">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/6/6b/WhatsApp.svg" alt="WhatsApp">
+    </a>
+</div>
+<section class="contact-section" id="contact">
+    <div class="contact-container" data-aos="fade-up">
+        
+        <div class="contact-info" data-aos="fade-right" data-aos-delay="200">
+            <h2>Get In Touch</h2>
+            <p style="color: #ccc; margin-bottom: 30px;">Have questions? Our team is here to help you 24/7.</p>
+
+            <div class="info-item">
+                <div class="icon">📍</div>
+                <div>
+                    <span>Campus Location</span>
+                    <p>Main Boulevard, Gulshan-e-Iqbal, Karachi</p>
+                </div>
+            </div>
+
+            <div class="info-item">
+                <div class="icon">📞</div>
+                <div>
+                    <span>Admission Office</span>
+                    <p>+92 300 1234567</p>
+                </div>
+            </div>
+
+            <div class="info-item">
+                <div class="icon">✉️</div>
+                <div>
+                    <span>Official Email</span>
+                    <p>admissions@educampus.edu</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="contact-form" data-aos="fade-left" data-aos-delay="400">
+            <h2>Send Message</h2>
+            <form action="#">
+                <div class="input-group">
+                    <input type="text" placeholder="Your Full Name" required>
+                </div>
+                <div class="input-group">
+                    <input type="email" placeholder="Your Email Address" required>
+                </div>
+                <div class="input-group">
+                    <textarea rows="5" placeholder="How can we help you?"></textarea>
+                </div>
+                <button type="submit" class="btn-submit">Submit Inquiry</button>
+            </form>
+        </div>
+
+    </div>
+</section>
+
+<section class="visiting-section">
+    <div class="visiting-container" data-aos="zoom-in">
+
+        <div class="card-content">
+            <h3>Visiting Hours</h3>
+            <ul class="hours-list">
+                <li><span>Monday - Friday</span> <span>08:00 AM - 04:00 PM</span></li>
+                <li><span>Saturday</span> <span>09:00 AM - 01:00 PM</span></li>
+                <li style="border:none"><span>Sunday</span> <span style="color: #ff4d4d;">Closed</span></li>
+            </ul>
+        </div>
+
+        <div class="card-content">
+            <h3>Campus Guidelines</h3>
+            <ul class="rules-list" style="list-style: none;">
+                <li>Prior appointment is highly recommended.</li>
+                <li>Visitors must present a valid CNIC/ID at the gate.</li>
+                <li>Photography is not allowed inside classrooms.</li>
+                <li>Maintain silence near the library and lab areas.</li>
+            </ul>
+        </div>
+
+    </div>
+</section>
+  
+    </div>
+</div>
+</section>
+
+   <footer class="main-footer">
+    <div class="footer-container">
+        <div class="footer-col" data-aos="fade-up">
+            <h2 class="footer-logo">KNOWLEDGE<span>hub</span></h2>
+            <p>Nurturing minds and building futures since 1995. Our campus provides a world-class learning environment for tomorrow's leaders.</p>
+            <div class="social-links">
+                <a href="#"><i class="fab fa-facebook-f"></i></a>
+                <a href="#"><i class="fab fa-instagram"></i></a>
+                <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                <a href="#"><i class="fab fa-youtube"></i></a>
+            </div>
+        </div>
+
+        <div class="footer-col" data-aos="fade-up" data-aos-delay="100">
+            <h3>Academics</h3>
+            <ul>
+                <li><a href="#"><i class="fas fa-chevron-right"></i> Academic Calendar</a></li>
+                <li><a href="#"><i class="fas fa-chevron-right"></i> School Curriculum</a></li>
+                <li><a href="#"><i class="fas fa-chevron-right"></i> Admissions 2026</a></li>
+                <li><a href="#"><i class="fas fa-chevron-right"></i> Student Portal</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-col" data-aos="fade-up" data-aos-delay="200">
+            <h3>Get In Touch</h3>
+            <ul>
+                <li><a href="#"><i class="fas fa-map-marker-alt"></i> Knowledge City, Karachi, Pakistan</a></li>
+                <li><a href="#"><i class="fas fa-phone"></i> +92 21 34567890</a></li>
+                <li><a href="#"><i class="fas fa-clock"></i> Mon - Fri: 8:00 AM - 2:00 PM</a></li>
+                <li><a href="#"><i class="fas fa-envelope"></i> admissions@educampus.edu</a></li>
+            </ul>
+        </div>
+    </div>
+    <div class="footer-bottom">
+        <p>&copy; 2026 EduCampus International. All rights reserved. | Designed by Yaqoob Tech</p>
+    </div>
+</footer>
+
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script>
+        AOS.init({ duration: 1000, once: false, mirror: true, offset: 120 });
+
+    // ============================================
+    // === UPDATED CART LOGIC (SLOWER & THICKER) ===
+    // ============================================
+    
+    const cartButtons = document.querySelectorAll('.add-btn');
+
+    cartButtons.forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.preventDefault(); 
+            animateToCart(this);
+            const originalHTML = this.innerHTML;
+            const originalBg = this.style.background;
+            
+            this.innerHTML = '<i class="fas fa-check"></i> Adding...';
+            this.style.background = '#0c59d6';
+            
+            setTimeout(() => {
+                this.innerHTML = '<i class="fas fa-check"></i> Added';
+                setTimeout(() => {
+                    this.innerHTML = originalHTML;
+                    this.style.background = originalBg;
+                }, 2000);
+            }, 1500); // Button text change bhi sync kiya
+        });
+    });
+
+    function animateToCart(button) {
+        const cartIcon = document.querySelector('.cart-icon'); 
+        const cartCountObj = document.getElementById('cart-count');
+        const dot = document.createElement('div');
+        dot.classList.add('flying-dot');
+
+        // Button Position
+        const btnRect = button.getBoundingClientRect();
+        dot.style.left = `${btnRect.left + btnRect.width / 2}px`;
+        dot.style.top = `${btnRect.top + btnRect.height / 2}px`;
+        document.body.appendChild(dot);
+
+        // Cart Icon Position
+        const cartRect = cartIcon.getBoundingClientRect();
+
+        setTimeout(() => {
+            // Target Position
+            dot.style.left = `${cartRect.left + cartRect.width / 2}px`;
+            dot.style.top = `${cartRect.top + cartRect.height / 2}px`;
+            dot.style.transform = "scale(0.1)"; 
+            dot.style.opacity = "0.7";
+        }, 50);
+
+        // **IMPORTANT:** Timeout barha kar 1500ms (1.5s) kar diya taake CSS transition se match kare
+        setTimeout(() => {
+            dot.remove();
+            let currentCount = parseInt(cartCountObj.innerText);
+            cartCountObj.innerText = currentCount + 1;
+            
+            cartIcon.style.transform = "scale(1.2)";
+            setTimeout(() => cartIcon.style.transform = "scale(1)", 200);
+
+        }, 1500); 
+    }
+
+        window.addEventListener('load', function () {
+            const preloader = document.getElementById('preloader');
+            setTimeout(() => { preloader.classList.add('loader-finish'); }, 1000); 
+        });
+
+        const slides = document.querySelectorAll('.slide');
+        let currentSlide = 0;
+        let slideInterval = setInterval(nextSlide, 4000);
+
+        function showSlide(index) {
+            slides.forEach(slide => slide.classList.remove('active'));
+            if (index >= slides.length) currentSlide = 0;
+            else if (index < 0) currentSlide = slides.length - 1;
+            else currentSlide = index;
+            slides[currentSlide].classList.add('active');
+        }
+        function nextSlide() { showSlide(currentSlide + 1); resetTimer(); }
+        function prevSlide() { showSlide(currentSlide - 1); resetTimer(); }
+        function resetTimer() { clearInterval(slideInterval); slideInterval = setInterval(nextSlide, 4000); }
+        const cursorDot = document.querySelector(".cursor-dot");
+    const cursorOutline = document.querySelector(".cursor-outline");
+
+ // --- CUSTOM CURSOR LOGIC ---
+const dot = document.querySelector('.cursor-dot');
+const outline = document.querySelector('.cursor-outline');
+
+window.addEventListener('mousemove', (e) => {
+    const posX = e.clientX;
+    const posY = e.clientY;
+
+    // Dot foran mouse ke sath chalega
+    dot.style.left = `${posX}px`;
+    dot.style.top = `${posY}px`;
+
+    // Outline halkay se delay ke sath ayega (Modern look)
+    outline.animate({
+        left: `${posX}px`,
+        top: `${posY}px`
+    }, { duration: 500, fill: "forwards" });
+});
+
+// Hover Effect: Links aur Buttons par check karne ke liye
+const links = document.querySelectorAll('a, button, .rule-card, .product-card');
+
+links.forEach(link => {
+    link.addEventListener('mouseenter', () => {
+        document.body.classList.add('cursor-hover');
+    });
+    link.addEventListener('mouseleave', () => {
+        document.body.classList.remove('cursor-hover');
+    });
+});
+        
+    </script>
+</body>
+</html>
